@@ -16,12 +16,15 @@ var server = http.createServer(function(request, response) {
     //response.write(request.url);
     response.writeHead(200, {"Content-Type": "application/json", "Access-Control-Allow-Origin":"http://localhost:4200"});
     pg.connect(function(err, client){
-        if(err) throw err;
-        const res = client.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", parsedURL.query.letter), 
-        function(qErr, qRes) {
-            response.write(JSON.stringify(qRes.rows.map(element=>element.Words)));
-            response.end();
-        });
+        if(err) {
+            response.end(err.message);
+        }else  {
+            const res = client.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", parsedURL.query.letter), 
+            function(qErr, qRes) {
+                response.write(JSON.stringify(qRes.rows.map(element=>element.Words)));
+                response.end();
+            });
+        }
     });
 
     //response.end("hello azure")
