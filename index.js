@@ -6,7 +6,7 @@ const util = require('util');
 var server = http.createServer(function(request, response) {
 
     var pg = new Pool({      
-         user: 'rcyogesh',
+         user: 'rcyogesh@rcpgserver.postgres.database.azure.com',
          host: 'rcpgserver.postgres.database.azure.com',
          database: 'postgres',
          password: 'RC4yogesh',
