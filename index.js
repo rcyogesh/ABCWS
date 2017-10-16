@@ -12,7 +12,8 @@ var server = http.createServer(function(request, response) {
     //     password: 'masterkey',
     //     port: 5432,
     // });
-    // const parsedURL = url.parse(request.url, true);
+    const parsedURL = url.parse(request.url, true);
+    response.write(request.url);
     // response.writeHead(200, {"Content-Type": "application/json", "Access-Control-Allow-Origin":"http://localhost:4200"});
     // pg.connect(function(err, client){
     //     if(err) throw err;
