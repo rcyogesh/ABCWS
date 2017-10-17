@@ -11,6 +11,7 @@ var server = http.createServer(function(request, response) {
          database: 'postgres',
          password: 'RC4yogesh',
          port: 5432,
+         sslmode: 'require'
      });
     const parsedURL = url.parse(request.url, true);
     //response.write(request.url);
