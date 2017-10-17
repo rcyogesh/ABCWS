@@ -22,8 +22,13 @@ var server = http.createServer(function(request, response) {
         }else  {
             const res = client.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", parsedURL.query.letter), 
             function(qErr, qRes) {
-                response.write(JSON.stringify(qRes.rows.map(element=>element.Words)));
-                response.end();
+                if(qErr) {
+                    response.end(qErr.message);
+                }
+                else {
+                    response.write(JSON.stringify(qRes.rows.map(element=>element.Words)));
+                    response.end();
+                }
             });
         }
     });
