@@ -5,12 +5,13 @@ const util = require('util');
 const fs = require('fs');
 
 var pg = new Pool({      
-        user: 'rcyogesh@rcpgserver.postgres.database.azure.com',
-        host: 'rcpgserver.postgres.database.azure.com',
-        database: 'Test',
-        password: 'RC4yogesh',
-        port: 5432,
-    });
+    user: 'rcyogesh@rcpgserver.postgres.database.azure.com',
+    host: 'rcpgserver.postgres.database.azure.com',
+    database: 'Test',
+    password: 'RC4yogesh',
+    port: 5432,
+});
+
 
 var server = http.createServer(function(request, response) {
     const parsedURL = url.parse(request.url, true);
@@ -20,27 +21,12 @@ var server = http.createServer(function(request, response) {
     var letter = parsedURL.query.letter;
     console.log(letter);
     if(letter == "" || letter == undefined){
+        console.log("no letter");
+        console.log(request.url);
         response.end("Please specify a letter");
     }
     else {
-        pg.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", parsedURL.query.letter),
-            function(qErr, qRes) {
-                if(qErr) {
-                    response.end(qErr.message);
-                }
-                else {
-                    var json = JSON.stringify(qRes.rows.map(element=>element.Words));
-                    response.write(json);
-                    fs.open("fileBlob.txt", "a", function(err, fd){
-                        if(!err) {
-                            fs.write(fd, json + "\r\n", function(err, written, str) {
-                                fs.close(fd);
-                            });
-                        }
-                    });
-                    response.end();
-                }
-            });
+        handleLetter(letter, response);
     }
 });
 
@@ -48,3 +34,25 @@ var port = process.env.PORT || 1337;
 server.listen(port);
 
 console.log("Server running at http://localhost:%d", port);
+
+
+function handleLetter(letter, response) {
+    pg.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", letter),
+    function(qErr, qRes) {
+        if(qErr) {
+            response.end(qErr.message);
+        }
+        else {
+            var json = JSON.stringify(qRes.rows.map(element=>element.Words));
+            response.write(json);
+            fs.open("fileBlob.txt", "a", function(err, fd){
+                if(!err) {
+                    fs.write(fd, json + "\r\n", function(err, written, str) {
+                        fs.close(fd);
+                    });
+                }
+            });
+            response.end();
+        }
+    });
+}
