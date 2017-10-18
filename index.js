@@ -8,7 +8,7 @@ var server = http.createServer(function(request, response) {
     var pg = new Pool({      
          user: 'rcyogesh@rcpgserver.postgres.database.azure.com',
          host: 'rcpgserver.postgres.database.azure.com',
-         database: 'postgres',
+         database: 'Test',
          password: 'RC4yogesh',
          port: 5432,
         //  sslmode: 'require'
