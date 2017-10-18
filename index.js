@@ -1,17 +1,18 @@
 var http = require('http');
-const { Pool } = require('pg');
 const url = require('url');
 const util = require('util');
 const fs = require('fs');
 
-var pg = new Pool({      
-    user: 'rcyogesh@rcpgserver.postgres.database.azure.com',
-    host: 'rcpgserver.postgres.database.azure.com',
-    database: 'Test',
-    password: 'RC4yogesh',
-    port: 5432,
+var words = [];
+fs.readFile("textDB.txt", 'utf8', function(err, data){
+    if(!err)
+    {
+        words = data.split("\n");
+        for (var index = 0; index < words.length; index++) {
+            words[index] = words[index].trim();
+        }
+    }
 });
-
 
 var server = http.createServer(function(request, response) {
     const parsedURL = url.parse(request.url, true);
@@ -37,22 +38,13 @@ console.log("Server running at http://localhost:%d", port);
 
 
 function handleLetter(letter, response) {
-    pg.query(util.format("SELECT * FROM public.\"Words\" where \"Words\" LIKE '%s%%'", letter),
-    function(qErr, qRes) {
-        if(qErr) {
-            response.end(qErr.message);
+    var subset = [];
+    words.forEach(function(element) {
+        if(element.startsWith(letter)) {
+            subset.push(element);
         }
-        else {
-            var json = JSON.stringify(qRes.rows.map(element=>element.Words));
-            response.write(json);
-            fs.open("fileBlob.txt", "a", function(err, fd){
-                if(!err) {
-                    fs.write(fd, json + "\r\n", function(err, written, str) {
-                        fs.close(fd);
-                    });
-                }
-            });
-            response.end();
-        }
-    });
+    }, this);
+    var json = JSON.stringify(subset);
+    response.write(json);
+    response.end();
 }
