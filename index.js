@@ -3,10 +3,27 @@ const url = require('url');
 const util = require('util');
 const letterFunction = require('./letter');
 const bp = require('./bp');
+const qs = require('querystring');
 
 var server = http.createServer(function(request, response) {
+    console.log("called");
+    //console.log(request);
     const parsedURL = url.parse(request.url, true);
 
+    if(request.method=="POST") {
+
+        var wholeData = '';
+        request.on('data', (data)=> {
+            wholeData += data;
+        });
+
+        request.on('end', ()=>{
+            let json = wholeData.toString();
+            bp.process(JSON.parse(json));
+        })
+
+        return;
+    }
     if(parsedURL.href.toLowerCase().indexOf("favicon.ico") != -1)
     {
         response.end();
@@ -18,6 +35,7 @@ var server = http.createServer(function(request, response) {
     var letter = parsedURL.query.letter;
     var bpEntry = parsedURL.query.BP;
     console.log(parsedURL.href);
+    
         //console.log(request.url);
     if(letter != "" && letter != undefined){
         letterFunction.process(letter, response);
